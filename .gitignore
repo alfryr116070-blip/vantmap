@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+archive/
+cache/
+work/
+*.local.json
+.DS_Store
+data/labels/
+data/archive/

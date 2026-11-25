@@ -1,0 +1,14 @@
+{
+  "name": "vantmap",
+  "description": "Verified progress maps for any research direction",
+  "owner": {
+    "name": "alfryr116070-blip"
+  },
+  "plugins": [
+    {
+      "name": "vantmap",
+      "source": "./plugins/vantmap",
+      "description": "Build, verify and update Vantmap progress maps (daily update, new map, checks)"
+    }
+  ]
+}

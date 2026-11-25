@@ -1,0 +1,451 @@
+{
+ "project": {
+  "title": "示例：阳台自动养护设备（虚构）",
+  "goal": "做出能自动给阳台植物浇水并按需补肥的小型设备，并卖给普通家庭",
+  "target_stage": "S2",
+  "finish_def": "有产品卖给家庭，并能同时自动浇水和补肥。",
+  "demo": true,
+  "verified": false,
+  "auto_refresh": false,
+  "updated": "2026-11-25",
+  "branches": [
+   {
+    "id": "sensor",
+    "name": "传感器路线",
+    "desc": "按土壤湿度决定何时浇水"
+   },
+   {
+    "id": "mech",
+    "name": "机械路线",
+    "desc": "按固定节奏滴灌"
+   },
+   {
+    "id": "adjacent",
+    "name": "相邻方向",
+    "desc": "只做其中一部分的产品",
+    "adjacent": true
+   }
+  ],
+  "sources": [
+   {
+    "id": "s-demo",
+    "name": "示例新闻页（虚构）",
+    "url": "https://example.org/news",
+    "kind": "news",
+    "covers": [
+     "demo-a",
+     "demo-b"
+    ],
+    "lang": "en",
+    "note": "虚构"
+   }
+  ],
+  "audit": {
+   "acceptance": {
+    "date": "2026-11-25",
+    "n": 0,
+    "correct": 0,
+    "minor": 0,
+    "wrong": 0,
+    "unsupported": 0,
+    "unreachable": 0,
+    "lower95": null,
+    "rounds": 0,
+    "note": "演示数据，没有做验收。"
+   }
+  },
+  "human_queue": [],
+  "run_stats": []
+ },
+ "entries": [
+  {
+   "id": "demo-a",
+   "name": "示例实验室 A（虚构）",
+   "short": "实验室 A",
+   "section": "main",
+   "branch": "sensor",
+   "stage": "S2",
+   "flags": [],
+   "confidence": "中",
+   "activity": "活跃",
+   "checked": "2026-11-25",
+   "evidence": [
+    {
+     "grade": "B",
+     "date": "2026-09-10",
+     "text": "公司称第一批阳台浇水器已卖给 300 户家庭。",
+     "url": "https://example.org/lab-a/news/first-shipments",
+     "quote": "Our first 300 units shipped to households this month.",
+     "verified": "2026-11-25",
+     "progress": true
+    },
+    {
+     "grade": "C",
+     "date": "2026-10-02",
+     "text": "行业媒体报道其产品在试用家庭中连续运行三个月。",
+     "url": "https://example.org/trade-news/lab-a-trial",
+     "quote": "ran for three months in trial homes",
+     "verified": "2026-11-25",
+     "progress": false
+    }
+   ],
+   "product": {
+    "name": "BalconyBot",
+    "intro": "一个夹在花盆边的浇水和补肥装置。",
+    "status": "公司称已开始销售。",
+    "sources": [
+     {
+      "url": "https://example.org/lab-a/product",
+      "quote": "BalconyBot is now on sale."
+     }
+    ]
+   },
+   "funding": {
+    "kind": "startup",
+    "total_usd": 12000000,
+    "valuation_usd": null,
+    "last_round": {
+     "date": "2026-06",
+     "name": "A 轮",
+     "amount_usd": 12000000,
+     "valuation_usd": null
+    },
+    "investors": [],
+    "sources": [
+     {
+      "url": "https://example.org/demo-a/funding",
+      "quote": "raised a total of $12M",
+      "verified": "2026-11-25",
+      "text": "公司称累计融资 1200 万美元。"
+     }
+    ],
+    "cites": {
+     "total_usd": {
+      "url": "https://example.org/demo-a/funding",
+      "quote": "raised a total of $12M"
+     },
+     "last_round": {
+      "url": "https://example.org/demo-a/funding",
+      "quote": "raised a total of $12M"
+     }
+    },
+    "note": "虚构"
+   },
+   "openness": [],
+   "gaps": {
+    "field": [],
+    "ours": []
+   },
+   "relation": "",
+   "impact": "",
+   "note": "虚构的示例条目。",
+   "milestone": "公司称第一批阳台浇水器已卖给 300 户家庭。",
+   "last_progress": "2026-09-10",
+   "milestone_ref": "https://example.org/lab-a/news/first-shipments",
+   "milestone_grade": "B"
+  },
+  {
+   "id": "demo-b",
+   "name": "示例公司 B（虚构）",
+   "short": "公司 B",
+   "section": "main",
+   "branch": "mech",
+   "stage": "S1",
+   "flags": [],
+   "confidence": "中",
+   "activity": "活跃",
+   "checked": "2026-11-25",
+   "evidence": [
+    {
+     "grade": "B",
+     "date": "2026-08-21",
+     "text": "公司称原型机进入 20 户家庭试点。",
+     "url": "https://example.org/company-b/blog/pilot",
+     "quote": "Our prototype entered a 20-home pilot.",
+     "verified": "2026-11-25",
+     "progress": true
+    }
+   ],
+   "product": {
+    "name": "DripOne",
+    "intro": "重力滴灌加湿度传感器的原型。",
+    "status": "试点中。",
+    "sources": [
+     {
+      "url": "https://example.org/company-b/blog/pilot",
+      "quote": "Our prototype entered a 20-home pilot."
+     }
+    ]
+   },
+   "funding": {
+    "kind": "startup",
+    "total_usd": 3000000,
+    "valuation_usd": null,
+    "last_round": {
+     "date": "2026-03",
+     "name": "种子轮",
+     "amount_usd": 3000000,
+     "valuation_usd": null
+    },
+    "investors": [],
+    "sources": [
+     {
+      "url": "https://example.org/demo-b/funding",
+      "quote": "raised a total of $3M",
+      "verified": "2026-11-25",
+      "text": "公司称累计融资 300 万美元。"
+     }
+    ],
+    "cites": {
+     "total_usd": {
+      "url": "https://example.org/demo-b/funding",
+      "quote": "raised a total of $3M"
+     },
+     "last_round": {
+      "url": "https://example.org/demo-b/funding",
+      "quote": "raised a total of $3M"
+     }
+    },
+    "note": "虚构"
+   },
+   "openness": [],
+   "gaps": {
+    "field": [],
+    "ours": []
+   },
+   "relation": "",
+   "impact": "",
+   "note": "虚构的示例条目。",
+   "milestone": "公司称原型机进入 20 户家庭试点。",
+   "last_progress": "2026-08-21",
+   "milestone_ref": "https://example.org/company-b/blog/pilot",
+   "milestone_grade": "B"
+  },
+  {
+   "id": "demo-c",
+   "name": "示例大学课题组 C（虚构）",
+   "short": "课题组 C",
+   "section": "main",
+   "branch": "sensor",
+   "stage": "S1",
+   "flags": [],
+   "confidence": "中",
+   "activity": "放缓",
+   "checked": "2026-11-25",
+   "evidence": [
+    {
+     "grade": "A",
+     "date": "2026-05-14",
+     "text": "同行评审论文报道了一种低成本土壤湿度传感方法，并在 40 个花盆中测试。",
+     "url": "https://example.org/journal/c-2026",
+     "quote": "tested in 40 pots over eight weeks",
+     "verified": "2026-11-25",
+     "progress": true
+    }
+   ],
+   "product": {
+    "name": "",
+    "intro": "",
+    "status": "",
+    "sources": []
+   },
+   "funding": {
+    "kind": "academic",
+    "total_usd": null,
+    "valuation_usd": null,
+    "last_round": null,
+    "investors": [],
+    "sources": [],
+    "cites": {},
+    "note": "虚构"
+   },
+   "openness": [
+    {
+     "kind": "code",
+     "name": "示例代码仓库",
+     "url": "https://example.org/code/c-sensor",
+     "license": "MIT",
+     "use": "可商用",
+     "date": "2026-05"
+    }
+   ],
+   "gaps": {
+    "field": [],
+    "ours": []
+   },
+   "relation": "",
+   "impact": "",
+   "note": "虚构的示例条目。",
+   "milestone": "同行评审论文报道了一种低成本土壤湿度传感方法，并在 40 个花盆中测试。",
+   "last_progress": "2026-05-14",
+   "milestone_ref": "https://example.org/journal/c-2026",
+   "milestone_grade": "A"
+  },
+  {
+   "id": "demo-d",
+   "name": "示例创业公司 D（虚构）",
+   "short": "公司 D",
+   "section": "main",
+   "branch": "mech",
+   "stage": "S0",
+   "flags": [],
+   "confidence": "中",
+   "activity": "活跃",
+   "checked": "2026-11-25",
+   "evidence": [
+    {
+     "grade": "C",
+     "date": "2026-07-30",
+     "text": "媒体报道该公司发布了概念视频，尚无原型。",
+     "url": "https://example.org/news/d-concept",
+     "quote": "released a concept video",
+     "verified": "2026-11-25",
+     "progress": true
+    }
+   ],
+   "product": {
+    "name": "",
+    "intro": "",
+    "status": "",
+    "sources": []
+   },
+   "funding": {
+    "kind": "startup",
+    "total_usd": null,
+    "valuation_usd": null,
+    "last_round": null,
+    "investors": [],
+    "sources": [],
+    "cites": {},
+    "note": "虚构"
+   },
+   "openness": [],
+   "gaps": {
+    "field": [],
+    "ours": []
+   },
+   "relation": "",
+   "impact": "",
+   "note": "虚构的示例条目。",
+   "milestone": "媒体报道该公司发布了概念视频，尚无原型。",
+   "last_progress": "2026-07-30",
+   "milestone_ref": "https://example.org/news/d-concept",
+   "milestone_grade": "C"
+  },
+  {
+   "id": "demo-e",
+   "name": "示例园艺品牌 E（虚构）",
+   "short": "品牌 E",
+   "section": "adjacent",
+   "branch": "adjacent",
+   "stage": "S2",
+   "flags": [],
+   "confidence": "中",
+   "activity": "活跃",
+   "checked": "2026-11-25",
+   "evidence": [
+    {
+     "grade": "B",
+     "date": "2026-10-18",
+     "text": "公司称其智能花盆已上市，但只浇水、不补肥。",
+     "url": "https://example.org/brand-e/launch",
+     "quote": "waters automatically; fertilising is not included",
+     "verified": "2026-11-25",
+     "progress": true
+    }
+   ],
+   "product": {
+    "name": "SmartPot",
+    "intro": "自动浇水花盆。",
+    "status": "已上市。",
+    "sources": [
+     {
+      "url": "https://example.org/brand-e/launch",
+      "quote": "waters automatically; fertilising is not included"
+     }
+    ]
+   },
+   "funding": {
+    "kind": "corporate",
+    "total_usd": null,
+    "valuation_usd": null,
+    "last_round": null,
+    "investors": [],
+    "sources": [],
+    "cites": {},
+    "note": "虚构"
+   },
+   "openness": [],
+   "gaps": {
+    "field": [],
+    "ours": []
+   },
+   "relation": "",
+   "impact": "",
+   "note": "虚构的示例条目。",
+   "milestone": "公司称其智能花盆已上市，但只浇水、不补肥。",
+   "last_progress": "2026-10-18",
+   "milestone_ref": "https://example.org/brand-e/launch",
+   "milestone_grade": "B"
+  }
+ ],
+ "watch": [
+  {
+   "id": "demo-w1",
+   "name": "示例团队 W（虚构）",
+   "short": "团队 W",
+   "branch": "sensor",
+   "stage_rough": "S0",
+   "one_line": "在社交媒体上展示过一个浇水原型。",
+   "why": "只有一条来源。",
+   "sources": [
+    {
+     "url": "https://example.org/social/w",
+     "quote": "our watering prototype",
+     "grade": "C",
+     "date": "2026-11-01"
+    }
+   ],
+   "checked": "2026-11-25",
+   "added": "2026-11-25"
+  }
+ ],
+ "leads": [
+  {
+   "id": "l-demo1",
+   "title": "Example startup teases balcony garden gadget",
+   "url": "https://example.org/news/lead-1",
+   "source": "example.org",
+   "date": "2026-11-20",
+   "found": "2026-11-25",
+   "matched": null,
+   "branch_guess": null
+  }
+ ],
+ "changes": [
+  {
+   "date": "2026-10-18",
+   "entry": "demo-e",
+   "type": "new",
+   "summary": "新加入相邻方向：品牌 E 的智能花盆上市。",
+   "url": "https://example.org/brand-e/launch"
+  }
+ ],
+ "corrections": [],
+ "brief": {
+  "date": "2026-11-25",
+  "headline": "4 个主方向团队，最远 S2",
+  "points": [
+   {
+    "text": "实验室 A 称已开始卖给家庭，是唯一到 S2 的主方向团队。",
+    "refs": [
+     "demo-a"
+    ]
+   }
+  ],
+  "you": {
+   "text": "这是演示数据，不代表任何真实团队。",
+   "refs": []
+  }
+ }
+}

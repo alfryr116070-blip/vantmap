@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vantmap · 进度地图</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--card2:#f1f3f8;--ink:#141a2b;--soft:#5b6478;--faint:#8a92a6;--line:#e3e7ef;--goal:#4f46e5;--on:#16a34a;--slow:#d97706;--off:#dc2626;--b1:#2563eb;--b2:#0891b2;--b3:#7c3aed;--b4:#db2777;--b5:#65a30d}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1220;--card:#161b2e;--card2:#1d2338;--ink:#e8ebf5;--soft:#a3abc2;--faint:#7a8299;--line:#2a3150}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--goal)}button{font:inherit;cursor:pointer}
+.top{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 20px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:19px}.brand i{font-style:normal;color:var(--goal)}
+.top select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 10px;max-width:260px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:13.5px}
+.btn.pri{background:var(--goal);border-color:var(--goal);color:#fff}.btn:hover{border-color:var(--goal)}
+.sp{flex:1}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 16px}
+h1{font-size:30px;line-height:1.25;margin:4px 0 8px;letter-spacing:-.02em}h2{font-size:17px;margin:0 0 12px}h3{font-size:15px;margin:14px 0 6px}
+.eyebrow{font-size:13px;color:var(--soft)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:14px 0}
+.step{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card)}.step b{display:block;margin-bottom:4px}.step .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--goal);color:#fff;font-size:13px;margin-right:6px}
+textarea{width:100%;min-height:160px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card2);color:var(--ink);font:13px/1.5 ui-monospace,Menlo,monospace}
+.msg{font-size:13px;margin-top:8px}.err{color:var(--off)}.ok{color:var(--on)}
+.ladder{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:14px 0 6px}.ladder div{text-align:center;font-size:12.5px;color:var(--soft)}.ladder i{display:block;height:8px;border-radius:4px;background:var(--line);margin-bottom:4px}.ladder .has i{background:var(--b1)}.ladder .tg{color:var(--goal);font-weight:700}.ladder .tg i{outline:2px solid var(--goal);outline-offset:2px}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:8px}.stats b{display:block;font-size:26px}.stats span{font-size:12.5px;color:var(--soft)}
+.grid{overflow-x:auto}.grid table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px}
+.grid th{min-width:96px;font-size:12px;color:var(--soft);font-weight:600;padding:6px;text-align:left;border-bottom:1px solid var(--line)}.grid th.tg{color:var(--goal)}
+.grid td{vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}.grid td.tg{background:color-mix(in srgb,var(--goal) 6%,transparent)}
+.rt b{display:block;font-size:13.5px}.rt small{color:var(--soft);font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:3px 9px;margin:2px;font-size:12.5px;color:var(--ink);cursor:pointer}.chip:hover{border-color:var(--goal)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.d-活跃{background:var(--on)}.d-放缓{background:var(--slow)}.d-停滞{background:var(--off)}.d-{background:var(--faint)}
+.sum p{margin:6px 0}.sum ul{margin:6px 0;padding-left:20px}.you{border-left:3px solid var(--goal);padding-left:12px;margin-top:10px}
+.list{width:100%;border-collapse:collapse;font-size:13.5px}.list th{text-align:left;font-size:12px;color:var(--soft);padding:6px;border-bottom:1px solid var(--line)}.list td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}.list tr{cursor:pointer}.list tr:hover td{background:var(--card2)}
+.st{font-weight:700;color:var(--b1)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--card);border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(0,0,0,.12);overflow-y:auto;padding:20px 22px 40px;transform:translateX(105%);transition:transform .2s;z-index:40}.drawer.open{transform:none}
+.x{position:absolute;top:12px;right:14px;border:0;background:none;font-size:24px;color:var(--soft)}
+.g{display:inline-block;min-width:20px;text-align:center;border-radius:6px;font-size:11.5px;font-weight:700;padding:0 5px;margin-right:6px;color:#fff}.g-A{background:#16a34a}.g-B{background:#65a30d}.g-C{background:#ca8a04}.g-D{background:#9ca3af}
+.ev{list-style:none;padding:0;margin:0}.ev li{padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.ev .d{color:var(--soft);font-size:12px;margin-right:6px}.ev q{display:block;font-size:12.5px;color:var(--soft);font-style:italic;margin-top:3px}
+.warn{color:var(--off);font-size:12px}
+.gaps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gaps div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}.gaps b{font-size:12.5px}.gaps ul{margin:4px 0 0;padding-left:18px}
+.ps{display:inline-block;font-size:11.5px;font-weight:600;border-radius:999px;padding:0 8px;background:var(--card2);color:var(--soft)}.ps.kept{color:var(--on)}.ps.late{color:var(--slow)}.ps.broken{color:var(--off)}
+.qbar{display:flex;height:10px;border-radius:6px;overflow:hidden;gap:2px;max-width:420px;margin:6px 0}
+.note{font-size:12.5px;color:var(--faint)}
+.vd{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:0 6px;margin-left:6px}.v-correct{background:#dcfce7;color:#166534}.v-minor{background:#fef9c3;color:#854d0e}.v-wrong,.v-unsupported{background:#fee2e2;color:#991b1b}.v-unreachable{background:#e5e7eb;color:#374151}.fix{font-size:12.5px;color:var(--slow);margin-top:3px}.bat{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.btn.done{border-color:var(--on);color:var(--on)}
+.pill{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--soft);margin-left:6px}
+@media(max-width:700px){h1{font-size:24px}.gaps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="brand"><i>V</i>antmap</span>
+  <select id="sel" title="已保存的地图"></select>
+  <span class="sp"></span>
+  <button class="btn pri" id="bCopy">复制给 ChatGPT 的指令</button>
+  <button class="btn" id="bImp">导入地图</button>
+  <button class="btn" id="bExp">导出</button>
+  <button class="btn" id="bDel">删除这张</button>
+</div>
+<main id="app"></main>
+<aside class="drawer" id="dr"></aside>
+<script id="PROMPT" type="text/plain"># Vantmap 进度地图 · 给 ChatGPT 的指令
+
+> Talk to the user in the language they write in (this prompt is in Chinese, but the user may not be). 用用户使用的语言和用户交流。
+
+你是“进度地图”研究员。用户会给你一个研究或产品方向，你要查清楚：全世界有哪些团队在做、各自做到哪一步、证据是什么，并输出一份可以导入 Vantmap 地图网页的 JSON。
+
+## 工作步骤
+1. 先问用户三件事（用户已经说了的就不问）：
+   - 方向：用一句可以检验的话写出终点，例如“做出能自动给阳台植物浇水并按需补肥的小型设备，并卖给普通家庭”；
+   - 目标阶段：S0–S5 里哪一档算到达终点，默认 S3；
+   - 范围：全球还是某个地区，是否只看公司（默认全球、公司和研究机构都算）。
+2. 搭框架：把这个方向拆成 2–5 条技术或商业路线；写清楚 S0–S5 在这个方向上分别意味着什么。
+3. 找团队：用联网搜索。英文为主，同时搜中文和当地语言来源；如果能用深度研究就用。先把团队名单尽量列全，再挑主要的逐个查。一般 8–20 个团队，每个团队至少打开 2 个网页。
+4. 写结论：每条结论都必须来自你**这次打开过的网页**，不能用记忆。
+5. 核查（自动做，不用等用户开口）：草稿写完后，换成“核查员”的身份找错，不是确认。
+   - **如果你能派出子代理或并行代理**（例如 Pro 模式里的并行代理）：派一个独立的核查代理。只交给它“证据清单”（每条的 eid、团队名、日期、等级、结论、链接、原文摘句）和下面的阶段标准，**不要**交给它你的推理过程和草稿结论。让它逐条打开链接判定，再按它的结果修改。review.mode 写 "subagent"。
+   - **如果不能**：你自己按下面的做法逐条重新打开链接核对，review.mode 写 "same_chat"。
+   - 每条证据判一个：correct（页面里找得到 quote，结论不比原文强，日期和等级对）；minor（结论成立但有小问题，写 fix）；wrong（和原文不符，写原文实际说了什么）；unsupported（页面能开但找不到依据）；unreachable（打不开）。
+   - 每个团队再判一次阶段：只看 correct 和 minor 的证据，按阶段标准阶段是否还成立；不成立就写 suggested。
+   - 证据的 eid 写成“团队 id#序号”，序号从 0 开始，按 evidence 数组里的顺序。
+   - 核查完：minor 的改成和原文一致；wrong 和 unsupported 的**保留在 evidence 里不删**，由网页根据 review 隐藏；阶段不成立的，stage 照旧，由网页显示建议阶段。把统计写进 self_check。
+6. 输出：只输出一个 ```json 代码块，格式见下文。然后提醒用户：“复制这段 JSON，粘贴到 Vantmap 网页的‘导入地图’框里。”
+
+## 阶段（S0–S5，按“证据能证明的最高点”判，不按宣传判）
+- S0 提出：只有计划、概念、融资新闻或只有 D 级证据。
+- S1 部分进展：有原型、演示、早期试验或论文，但还没宣称完成目标。
+- S2 宣称完成：公司或团队自己宣布达到终点（发布、开售、交付、试验达到主要终点），但还没有独立确认。
+- S3 验证中：有独立的权威确认正在进行或部分完成（监管审评、独立评测、同行评审的关键结果、第三方实测）。
+- S4 公认：监管批准或独立确认完成，并且没有未解决的具体异议。
+- S5 巩固：成为标准做法，规模化、多方复现。
+
+## 证据等级
+- A：监管文件、交易所公告、经审计财报、同行评审论文、官方登记的试验结果。
+- B：公司自己发布的（官网、新闻稿、创始人公开发言）。
+- C：专业媒体或具名专家依据实测、文件做的原创报道。
+- D：综合新闻、转载、聚合网站、维基、论坛。
+
+## 硬规则
+- D 级证据不能单独支撑任何升档；只有 D 级证据时，阶段判 S0。
+- 五篇报道转载同一份新闻稿，只算一条证据，等级按源头算。
+- 措辞不能比原文强：“计划”不能写成“已经”，“试点”不能写成“上线”，“预订”不能写成“销量”；“约”“称”“有望”要照原文保留。
+- 每条证据都要有：日期、等级、一句中文结论、链接（具体页面，不是首页）、原文摘句（逐字复制，不超过 40 个词，不翻译）。
+- 证据分不清两档时判低档，并在 gaps 里写明缺什么。
+- 两种缺口要分开写：
+  - field：这个团队自身还缺的，例如“要到 S3：公开资料中未见独立实测”；
+  - ours：你这次没查到、没核实的，例如“FDA 批准页没能打开”。
+- 承诺：公司或高管公开说过、带期限的话（“2026 年底量产”）记进 promises。已到期的判 kept（按时做到）、late（晚了）、broken（没做到）、unclear（查不到结果）；没到期的写 pending。
+- 资金：只写已披露的；洽谈中、未完成的不算。金额统一换成美元，并写明来源。
+- 查不到就写 null，不要猜。
+
+## 输出格式（字段名不要改）
+```json
+{
+  "vantmap": 1,
+  "goal": "终点的一句话",
+  "goal_short": "不超过 14 个字",
+  "target_stage": "S3",
+  "as_of": "YYYY-MM-DD",
+  "stages": {"S0": "在这个方向上意味着…", "S1": "…", "S2": "…", "S3": "…", "S4": "…", "S5": "…"},
+  "routes": [{"id": "r1", "name": "路线名", "desc": "一两句：做法和最大难点"}],
+  "teams": [{
+    "id": "英文短 id",
+    "name": "团队或公司名（产品名）",
+    "route": "r1",
+    "stage": "S1",
+    "stage_reason": "一句话：为什么是这一档，引用哪条证据",
+    "confidence": "高|中|低",
+    "activity": "活跃|放缓|停滞",
+    "milestone": {"date": "YYYY-MM", "text": "最近一次实质进展"},
+    "product": "一两句：它做的是什么",
+    "funding": {"text": "例如：累计融资约 $1.2B（2025-09，官网）", "usd": 1200000000, "url": "来源链接"},
+    "open_source": [{"name": "仓库或模型名", "url": "链接", "license": "许可证原文或 null"}],
+    "relation": "一两句：和用户的方向是什么关系（对手 / 可借鉴 / 可直接用）",
+    "gaps": {"field": ["…"], "ours": ["…"]},
+    "evidence": [{"date": "YYYY-MM-DD", "grade": "B", "text": "一句中文结论", "url": "链接", "quote": "原文摘句", "progress": true}],
+    "promises": [{"said": "YYYY-MM", "due": "2026-H2", "who": "谁说的", "text": "承诺了什么", "quote": "原话", "url": "链接", "status": "pending", "outcome": null}]
+  }],
+  "candidates": [{"name": "找到但没查完的团队", "url": "链接", "why": "为什么可能相关"}],
+  "summary": {"headline": "一句话结论", "points": ["3–5 条要点，每条不超过 80 字"], "for_you": "对用户意味着什么：哪段还是空白，最该盯谁"},
+  "self_check": {"claims": 0, "rechecked": 0, "fixed": 0, "removed": 0, "notes": "哪些地方把握不大"},
+  "review": {
+    "mode": "subagent 或 same_chat",
+    "items": [{"eid": "团队id#0", "verdict": "correct|minor|wrong|unsupported|unreachable", "note": "一句话", "fix": "需要修正时写，否则 null"}],
+    "teams": [{"id": "团队id", "stage_ok": true, "suggested": null, "why": "一句话"}],
+    "notes": "核查员的整体印象"
+  }
+}
+```
+
+## 之后的对话
+- 用户问“某某团队怎么样”时，只依据你打开过的网页回答，并附链接。
+- 用户说“更新一下”时，只查上次 as_of 之后的新动态，输出更新后的完整 JSON。
+- 用户说“再核查一遍”时，重做第 5 步，只输出更新后的完整 JSON。
+- 用户说“换个方向”时，从第 1 步重新开始。
+</script>
+<script id="REVIEW" type="text/plain"># Vantmap 核查员指令
+
+你是独立核查员。下面是另一位研究员做的“进度地图”的一部分。你的任务是**找错**，不是确认。你没有参与这份调研，不要相信它写的任何结论；每一条都要你自己打开链接核对。
+
+## 怎么核对每条证据（items）
+对每一条，用浏览功能打开 url，然后判：
+- correct：页面里能找到 quote（逐字或只差标点、空格），text 的意思没有比原文更强，日期对，等级合理。
+- minor：结论成立，但有小问题：日期差几天、数字四舍五入不同、等级应差一档、措辞略强（“约”被省略）等。在 fix 里写正确的写法。
+- wrong：原文说的和 text 不一样，或数字、日期、主体明显错了，或把“计划”写成了“已经”。在 fix 里写原文实际说了什么。
+- unsupported：页面能打开，但找不到 quote，也找不到能支持 text 的内容。
+- unreachable：页面打不开（404、付费墙、需要登录）。这不算错，但要单独标出来。
+
+等级标准：A 监管文件、财报、论文；B 公司官方；C 专业媒体原创报道；D 转载、聚合站、自媒体。
+
+## 怎么核对阶段（teams）
+阶段标准（按证据能证明的最高点判，不按宣传判）：
+- S0 提出：只有计划、概念、融资，或只有 D 级证据。
+- S1 部分进展：有原型、演示、早期试验或论文，还没宣称完成目标。
+- S2 宣称完成：团队自己宣布达到终点，但没有独立确认。
+- S3 验证中：独立的权威确认正在进行或部分完成。
+- S4 公认：监管批准或独立确认完成，没有未解决的具体异议。
+- S5 巩固：成为标准做法，规模化、多方复现。
+
+规则：D 级证据不能单独支撑升档；分不清两档时判低档。在你判为 correct 或 minor 的证据范围内，看给的阶段是否成立。不成立就写 suggested（建议阶段）和 why。
+
+## 规则
+- 每一条都要真的打开链接，不能凭印象或凭别的条目推断。
+- 不要补写新证据，也不要改写结论，只判对错、写修正。
+- 宁可严一点：拿不准是 correct 还是 minor 时，判 minor 并说明。
+- 条目很多时，可以分几条回复，但最终只输出一个完整的 JSON 代码块。
+
+## 输出格式（只输出这一个代码块，字段名不要改）
+```json
+{
+  "vantmap_review": 1,
+  "goal": "照抄下面数据里的 goal",
+  "batch": "照抄下面数据里的 batch",
+  "reviewed_at": "YYYY-MM-DD",
+  "items": [{"eid": "照抄", "verdict": "correct|minor|wrong|unsupported|unreachable", "note": "一句话说明", "fix": "需要修正时写正确内容，否则 null"}],
+  "teams": [{"id": "照抄", "stage_ok": true, "suggested": null, "why": "一句话"}],
+  "notes": "整体印象，例如哪类错误最多"
+}
+```
+
+## 要核查的数据
+</script>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SK=["S0","S1","S2","S3","S4","S5"], SN={S0:"提出",S1:"部分进展",S2:"宣称完成",S3:"验证中",S4:"公认",S5:"巩固"};
+let MAPS=[], CUR=-1;
+const VN={correct:"✓ 核对无误",minor:"≈ 小问题",wrong:"✗ 错误",unsupported:"✗ 找不到依据",unreachable:"? 打不开"};
+const eid=(t,i)=>t.id+"#"+i;
+function rv(d){ return d.review||{items:{},teams:{},batches:{}}; }
+function eff(d,t){ const r=rv(d).teams[t.id]; return (d.applied&&r&&r.stage_ok===false&&SK.includes(r.suggested))?r.suggested:(SK.includes(t.stage)?t.stage:"S0"); }
+function evs(d,t){ const it=rv(d).items; return (t.evidence||[]).map((x,i)=>({...x,_e:eid(t,i),_v:it[eid(t,i)]})).filter(x=>!(d.applied&&x._v&&["wrong","unsupported"].includes(x._v.verdict))); }
+function batches(d){ const out=[]; let cur=[],n=0; (d.teams||[]).forEach(t=>{ const k=(t.evidence||[]).length; if(n&&n+k>25){out.push(cur);cur=[];n=0} cur.push(t); n+=k; }); if(cur.length) out.push(cur); return out; }
+function reviewText(d,bi){ const B=batches(d), ts=B[bi], tag=(bi+1)+"/"+B.length;
+  const data={goal:d.goal,batch:tag,items:[],teams:[]};
+  ts.forEach(t=>{ (t.evidence||[]).forEach((x,i)=>data.items.push({eid:eid(t,i),team:t.name,date:x.date,grade:x.grade,text:x.text,url:x.url,quote:x.quote})); data.teams.push({id:t.id,name:t.name,stage:t.stage,stage_reason:t.stage_reason,eids:(t.evidence||[]).map((_,i)=>eid(t,i))}); });
+  return $("#REVIEW").textContent.trim()+"\n```json\n"+JSON.stringify(data,null,1)+"\n```"; }
+async function copyText(t,b,ok){ const old=b.textContent; try{ await navigator.clipboard.writeText(t); }catch(_){ const ta=document.createElement("textarea"); ta.value=t; document.body.append(ta); ta.select(); try{document.execCommand("copy")}catch(__){} ta.remove(); } b.textContent=ok; setTimeout(()=>b.textContent=old,3000); }
+function load(){ try{ MAPS=JSON.parse(localStorage.getItem("vantmap-maps")||"[]"); }catch(_){ MAPS=[]; } }
+function save(){ try{ localStorage.setItem("vantmap-maps",JSON.stringify(MAPS)); }catch(_){ } }
+function parse(t){ t=String(t||"").trim(); const m=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(m) t=m[1]; const i=t.indexOf("{"), j=t.lastIndexOf("}"); if(i<0||j<i) throw new Error("没找到 JSON：请把 ChatGPT 输出的整段代码块复制过来"); return JSON.parse(t.slice(i,j+1)); }
+function check(d){ const w=[], e=[];
+  if(!d||typeof d!=="object") e.push("不是一个对象");
+  if(!Array.isArray(d.teams)||!d.teams.length) e.push("teams 为空");
+  (d.teams||[]).forEach(t=>{ if(!SK.includes(t.stage)) w.push(`${t.name||t.id}：阶段 ${t.stage} 无效，按 S0 显示`);
+    const ev=t.evidence||[]; if(!ev.length) w.push(`${t.name}：没有证据`);
+    ev.forEach(x=>{ if(!x.url) w.push(`${t.name}：有一条证据没有链接`); if(!x.quote) w.push(`${t.name}：有一条证据没有原文摘句`); });
+    if(t.stage&&t.stage!=="S0"&&ev.length&&ev.every(x=>x.grade==="D")) w.push(`${t.name}：只有 D 级证据却判了 ${t.stage}（规则要求判 S0）`);
+  });
+  return {e,w};
+}
+function render(){
+  const sel=$("#sel"); sel.innerHTML=MAPS.length?MAPS.map((m,i)=>`<option value="${i}" ${i===CUR?"selected":""}>${esc(m.goal_short||m.goal||"未命名")} · ${esc(m.as_of||"")}</option>`).join(""):`<option>还没有地图</option>`;
+  ["bExp","bDel"].forEach(id=>$("#"+id).style.display=CUR>=0?"":"none");
+  if(CUR<0) return renderEmpty();
+  renderMap(MAPS[CUR]);
+}
+function renderEmpty(){
+  $("#app").innerHTML=`<div class="card"><div class="eyebrow">Vantmap · 进度地图</div><h1>输入一个方向，看清谁在做、做到哪一步</h1>
+  <p style="color:var(--soft)">调研由你的 ChatGPT 完成（用你自己的会员额度），这个页面只负责把结果画成地图。所有数据只存在你这台电脑的浏览器里。</p>
+  <div class="steps">
+   <div class="step"><b><span class="n">1</span>复制指令</b>点右上角“复制给 ChatGPT 的指令”，粘贴进一个新的 ChatGPT 对话。能用“深度研究”就打开它，效果更好。</div>
+   <div class="step"><b><span class="n">2</span>说出你的方向</b>例如“做出能自动给阳台植物浇水并按需补肥的小型设备，并卖给普通家庭”。ChatGPT 会联网查、逐条核对，最后给你一段 JSON。</div>
+   <div class="step"><b><span class="n">3</span>粘贴到这里</b>把 JSON 整段粘到下面，点“显示地图”。可以存很多张，随时切换。</div>
+  </div></div>
+  ${importBox()}`;
+  wireImport();
+}
+function importBox(){ return `<div class="card" id="imp"><h2>导入地图</h2><textarea id="ta" placeholder="把 ChatGPT 输出的地图 JSON 或核查结果 JSON（连同 \`\`\`json 代码块）整段粘贴到这里"></textarea>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn pri" id="bShow">显示地图</button><label class="btn">从文件导入<input type="file" id="file" accept=".json,.txt" hidden></label></div><div class="msg" id="msg"></div></div>`; }
+function wireImport(){
+  $("#bShow").onclick=()=>doImport($("#ta").value);
+  $("#file").onchange=ev=>{ const f=ev.target.files[0]; if(!f) return; f.text().then(doImport); };
+}
+function doImport(t){ const m=$("#msg"); try{ const d=parse(t);
+  if(d.vantmap_review){ let k=MAPS.findIndex(x=>x.goal===d.goal); if(k<0) k=CUR; if(k<0) throw new Error("先导入地图，再导入核查结果"); const M=MAPS[k], r=rv(M);
+    const known=new Set((M.teams||[]).flatMap(t=>(t.evidence||[]).map((_,i)=>eid(t,i)))); let n=0;
+    (d.items||[]).forEach(x=>{ if(known.has(x.eid)&&VN[x.verdict]){ r.items[x.eid]=x; n++; } });
+    (d.teams||[]).forEach(x=>{ if((M.teams||[]).some(t=>t.id===x.id)) r.teams[x.id]=x; });
+    if(d.batch) r.batches[d.batch]=d.reviewed_at||true; if(d.notes) r.notes=[...(r.notes||[]).filter(z=>z!==d.notes),d.notes];
+    r.external=true; M.review=r; CUR=k; save(); render(); scrollTo(0,0); setTimeout(()=>{ const x=$("#rvmsg"); if(x){ x.className="msg ok"; x.textContent=`已导入核查结果：${n} 条证据`; } },0); return; }
+  const c=check(d);
+  if(d.review&&Array.isArray(d.review.items)){ const r={items:{},teams:{},batches:{},mode:d.review.mode==="subagent"?"subagent":"same_chat",notes:d.review.notes?[d.review.notes]:[]};
+    const known=new Set((d.teams||[]).flatMap(t=>(t.evidence||[]).map((_,i)=>eid(t,i))));
+    d.review.items.forEach(x=>{ if(x&&known.has(x.eid)&&VN[x.verdict]) r.items[x.eid]=x; });
+    (d.review.teams||[]).forEach(x=>{ if(x&&(d.teams||[]).some(t=>t.id===x.id)) r.teams[x.id]=x; });
+    d.review=r; } else if(d.review&&!d.review.items) delete d.review; if(c.e.length) throw new Error(c.e.join("；")); d._warn=c.w; d._at=new Date().toISOString();
+  const k=MAPS.findIndex(x=>x.goal===d.goal); if(k>=0) MAPS[k]=d; else MAPS.unshift(d); CUR=k>=0?k:0; save(); render(); scrollTo(0,0); }catch(e){ m.className="msg err"; m.textContent="导入失败："+e.message; } }
+function renderMap(d){
+  const T=d.target_stage||"S3", ti=SK.indexOf(T), teams=d.teams||[], routes=(d.routes&&d.routes.length?d.routes:[{id:"_",name:"全部",desc:""}]);
+  const cnt=k=>teams.filter(t=>eff(d,t)===k).length, top=teams.reduce((m,t)=>Math.max(m,SK.indexOf(eff(d,t))),0), reached=teams.filter(t=>SK.indexOf(eff(d,t))>=ti).length;
+  const grades={A:0,B:0,C:0,D:0}; let nev=0; teams.forEach(t=>evs(d,t).forEach(x=>{ if(grades[x.grade]!==undefined){grades[x.grade]++;nev++} }));
+  const rteams=r=>teams.filter(t=>(routes.length===1&&r.id==="_")||t.route===r.id), orphan=teams.filter(t=>routes.length>1&&!routes.some(r=>r.id===t.route));
+  const rowsR=[...routes,...(orphan.length?[{id:"__",name:"其他",desc:""}]:[])];
+  const sc=d.self_check||{}, s=d.summary||{};
+  $("#app").innerHTML=`<div class="card"><div class="eyebrow">${esc(d.goal_short||"")} · 数据截至 ${esc(d.as_of||"?")} · 由 ChatGPT 调研</div>
+   <h1>${esc(d.goal||"")}</h1>
+   <div class="ladder">${SK.map(k=>`<div class="${cnt(k)?"has":""} ${k===T?"tg":""}"><i></i>${k} ${SN[k]} · <b>${cnt(k)}</b>${k===T?" · 终点":""}</div>`).join("")}</div>
+   <div class="stats"><div><b>${teams.length}</b><span>个团队</span></div><div><b>S${top}</b><span>最远走到 ${SN["S"+top]}</span></div><div><b>${reached}</b><span>支已到终点（${T}）</span></div><div><b>${nev}</b><span>条证据，A ${grades.A} · B ${grades.B} · C ${grades.C} · D ${grades.D}</span></div></div></div>
+  ${s.headline?`<div class="card sum"><h2>${esc(s.headline)}</h2><ul>${(s.points||[]).map(p=>`<li>${esc(p)}</li>`).join("")}</ul>${s.for_you?`<p class="you"><b>对你意味着什么：</b>${esc(s.for_you)}</p>`:""}</div>`:""}
+  <div class="card grid"><h2>地图：路线 × 阶段</h2><table><thead><tr><th style="width:190px">路线</th>${SK.map(k=>`<th class="${k===T?"tg":""}">${k} ${SN[k]}${k===T?" ◎":""}</th>`).join("")}</tr></thead><tbody>
+   ${rowsR.map(r=>{const ts=r.id==="__"?orphan:rteams(r); return `<tr><td class="rt"><b>${esc(r.name)}</b><small>${esc(r.desc||"")}</small></td>${SK.map(k=>`<td class="${k===T?"tg":""}">${ts.filter(t=>eff(d,t)===k).map(t=>`<span class="chip" data-id="${esc(t.id)}"><span class="dot d-${esc(t.activity||"")}"></span>${esc(t.name)}</span>`).join("")}</td>`).join("")}</tr>`}).join("")}
+   </tbody></table><p class="note">圆点颜色：绿＝活跃，橙＝放缓，红＝停滞。◎ 是终点所在的阶段。点团队名看证据。</p></div>
+  <div class="card"><h2>全部团队</h2><table class="list"><thead><tr><th>团队</th><th>阶段</th><th>最近进展</th><th>资金</th><th>把握</th></tr></thead><tbody>
+   ${[...teams].sort((a,b)=>SK.indexOf(eff(d,b))-SK.indexOf(eff(d,a))).map(t=>{const r=rv(d).teams[t.id]; return `<tr data-id="${esc(t.id)}"><td><span class="dot d-${esc(t.activity||"")}"></span> ${esc(t.name)}</td><td class="st">${esc(eff(d,t))}${r&&r.stage_ok===false&&!d.applied?`<div class="warn">核查建议 ${esc(r.suggested||"降档")}</div>`:""}</td><td>${t.milestone?`${esc(t.milestone.date||"")} ${esc(t.milestone.text||"")}`:""}</td><td>${esc(t.funding&&t.funding.text||"")}</td><td>${esc(t.confidence||"")}</td></tr>`}).join("")}
+   </tbody></table></div>
+  ${(d.candidates||[]).length?`<div class="card"><h2>找到但还没查完的</h2><ul>${d.candidates.map(c=>`<li>${c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>`:esc(c.name)} <span class="note">${esc(c.why||"")}</span></li>`).join("")}</ul><p class="note">可以对 ChatGPT 说“把候选里的某某也查一下，输出更新后的完整 JSON”，再导入一次。</p></div>`:""}
+  ${d.stages&&Object.keys(d.stages).length?`<div class="card"><h2>在这个方向上，各阶段意味着什么</h2><ul>${SK.filter(k=>d.stages[k]).map(k=>`<li><b>${k} ${SN[k]}</b>${k===T?' <span class="pill">终点</span>':""}：${esc(d.stages[k])}</li>`).join("")}</ul></div>`:""}
+  <div class="card"><h2>这张图有多可信</h2>
+   <p>ChatGPT 自查：共 ${sc.claims??"?"} 条结论，重新打开核对 ${sc.rechecked??"?"} 条，改正 ${sc.fixed??"?"} 条，删除 ${sc.removed??"?"} 条。${sc.notes?`<br><span class="note">${esc(sc.notes)}</span>`:""}</p>
+   ${nev?`<div class="qbar">${["A","B","C","D"].map(k=>grades[k]?`<i class="g-${k}" style="flex:${grades[k]}"></i>`:"").join("")}</div><p class="note">证据等级：A 监管文件、财报、论文 · B 公司官方 · C 专业媒体原创报道 · D 转载和聚合站。D 越少，结论越站得住。</p>`:""}
+   ${(d._warn||[]).length?`<p class="warn">页面检查发现 ${d._warn.length} 处问题：</p><ul class="warn">${d._warn.slice(0,12).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="ok msg">格式检查通过：每条证据都有链接和原文摘句。</p>`}
+   ${reviewHTML(d)}</div>
+  ${importBox().replace('<h2>导入地图</h2>','<h2>导入或更新地图</h2>')}`;
+  wireImport();
+  document.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openTeam(d,el.dataset.id));
+  document.querySelectorAll("[data-b]").forEach(el=>el.onclick=()=>copyText(reviewText(d,+el.dataset.b),el,"已复制，去新对话粘贴"));
+  const ap=$("#bApply"); if(ap) ap.onclick=()=>{ d.applied=!d.applied; save(); render(); };
+}
+function reviewHTML(d){ const B=batches(d), r=rv(d), all=(d.teams||[]).flatMap(t=>(t.evidence||[]).map((_,i)=>eid(t,i)));
+  const v={correct:0,minor:0,wrong:0,unsupported:0,unreachable:0}; all.forEach(e=>{ const x=r.items[e]; if(x) v[x.verdict]++; });
+  const done=Object.values(v).reduce((a,b)=>a+b,0), judged=done-v.unreachable, bad=v.wrong+v.unsupported, down=Object.values(r.teams).filter(x=>x.stage_ok===false).length;
+  const how=[r.mode==="subagent"?"ChatGPT 派出的独立核查代理（只看到证据清单，没看到调研过程）":r.mode==="same_chat"?"ChatGPT 在同一个对话里逐条重开链接复查（自动完成，但核查员看过自己的调研，独立性较弱）":"",r.external?"另开对话或另一个 AI 的外部复查":""].filter(Boolean).join(" ＋ ");
+  return `<h3>核查</h3>
+   ${how?`<p>核查方式：${how}</p>`:""}
+   ${done?`<p><b>已核查 ${done} / ${all.length} 条证据</b>：无误 ${v.correct} · 小问题 ${v.minor} · 错误 ${v.wrong} · 找不到依据 ${v.unsupported} · 打不开 ${v.unreachable}。${judged?` 能核对的里面，错误和无依据占 <b>${Math.round(bad*1000/judged)/10}%</b>，小问题占 ${Math.round(v.minor*1000/judged)/10}%。`:""}${down?` 有 ${down} 个团队的阶段被建议调整。`:""}</p>
+   ${(bad||down)?`<button class="btn ${d.applied?"done":"pri"}" id="bApply">${d.applied?"✓ 已按核查修正（点击恢复原样）":"按核查结果修正：隐藏错误证据、采用建议阶段"}</button>`:""}
+   ${(r.notes||[]).length?`<p class="note">核查员备注：${r.notes.map(esc).join(" / ")}</p>`:""}`:`<p class="note">这张图没有带核查结果。用最新的指令重新调研，ChatGPT 会自动核查；也可以用下面的按钮另找一个 AI 复查。</p>`}
+   <h3>再找一个 AI 复查（可选，更独立）</h3>
+   <p class="note">点按钮复制核查指令，粘到另一个 AI（Gemini、豆包、Claude 等能上网的都行）或 ChatGPT 的临时聊天里，把返回的 JSON 粘回下面的导入框。结果会和上面的合并，后导入的覆盖先前的判定。证据多时分批，每批约 25 条。</p>
+   <div class="bat">${B.map((_,i)=>{const tag=(i+1)+"/"+B.length; return `<button class="btn ${r.batches[tag]?"done":""}" data-b="${i}">${r.batches[tag]?"✓ ":""}复制核查指令 ${B.length>1?"第 "+tag+" 批":""}</button>`}).join("")}</div>
+   <div id="rvmsg" class="msg"></div>
+   <p class="note">核查员也是 AI，可能漏看或误判；它和调研用同一家模型时，独立性会打折扣，换一家 AI 核查更可靠。这张图也不会自动更新：想更新，对原来的 ChatGPT 对话说“更新一下”，再导入新的 JSON。</p>`; }
+function openTeam(d,id){ const t=(d.teams||[]).find(x=>x.id===id); if(!t) return; const g=t.gaps||{}, f=t.funding||{};
+  const PS={kept:"按时兑现",late:"延期兑现",broken:"没兑现",pending:"未到期",unclear:"无法判断"};
+  $("#dr").innerHTML=`<button class="x" aria-label="关闭">×</button>
+  <div class="eyebrow">${esc((d.routes||[]).find(r=>r.id===t.route)?.name||"")}</div><h2 style="font-size:21px;margin-top:4px">${esc(t.name)}</h2>
+  ${(()=>{const r=rv(d).teams[t.id]; return r&&r.stage_ok===false?`<p class="warn">核查员认为阶段 ${esc(t.stage)} 不成立，建议 ${esc(r.suggested||"降档")}：${esc(r.why||"")}</p>`:""})()}<p><span class="st">${esc(eff(d,t))} ${SN[eff(d,t)]||""}</span><span class="pill">${esc(t.activity||"")}</span><span class="pill">把握 ${esc(t.confidence||"?")}</span></p>
+  ${t.stage_reason?`<p>${esc(t.stage_reason)}</p>`:""}
+  ${t.product?`<h3>产品</h3><p>${esc(t.product)}</p>`:""}
+  ${t.relation?`<p class="you"><b>和你的关系：</b>${esc(t.relation)}</p>`:""}
+  <h3>离终点还差什么</h3><div class="gaps"><div><b>团队自身还缺的</b>${(g.field||[]).length?`<ul>${g.field.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:'<p class="note">待补充</p>'}</div><div><b>这次没查到、没核实的</b>${(g.ours||[]).length?`<ul>${g.ours.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:'<p class="note">无</p>'}</div></div>
+  ${f.text?`<h3>资金</h3><p>${esc(f.text)} ${f.url?`<a href="${esc(f.url)}" target="_blank" rel="noopener">来源</a>`:""}</p>`:""}
+  <h3>证据（${evs(d,t).length}）</h3><ul class="ev">${evs(d,t).map(x=>`<li><span class="g g-${esc(x.grade)}">${esc(x.grade||"?")}</span><span class="d">${esc(x.date||"日期不详")}</span>${esc(x.text)} ${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">原文</a>`:'<span class="warn">没有链接</span>'}${x._v?`<span class="vd v-${esc(x._v.verdict)}">${VN[x._v.verdict]}</span>`:""}${x.quote?`<q>${esc(x.quote)}</q>`:'<div class="warn">没有原文摘句</div>'}${x._v&&(x._v.fix||x._v.note)&&x._v.verdict!=="correct"?`<div class="fix">核查：${esc(x._v.fix||x._v.note)}</div>`:""}</li>`).join("")}</ul>
+  ${(t.promises||[]).length?`<h3>说过的话</h3><ul class="ev">${t.promises.map(p=>`<li><span class="ps ${esc(p.status)}">${esc(PS[p.status]||p.status||"")}</span> ${esc(p.text)} <span class="d">${esc(p.who||"")} · 说于 ${esc(p.said||"?")} · 期限 ${esc(p.due||"?")}</span> ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">原文</a>`:""}${p.quote?`<q>${esc(p.quote)}</q>`:""}${p.outcome?`<div>结果：${esc(typeof p.outcome==="string"?p.outcome:(p.outcome.text||""))}</div>`:""}</li>`).join("")}</ul>`:""}
+  ${(t.open_source||[]).length?`<h3>公开成果</h3><ul>${t.open_source.map(o=>`<li><a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.name)}</a> <span class="note">${esc(o.license||"许可证未写明")}</span></li>`).join("")}</ul>`:""}`;
+  $("#dr").classList.add("open"); $("#dr .x").onclick=()=>$("#dr").classList.remove("open");
+}
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") $("#dr").classList.remove("open"); });
+$("#sel").onchange=e=>{ CUR=+e.target.value; render(); };
+$("#bImp").onclick=()=>{ const b=$("#imp"); if(b){ b.scrollIntoView({behavior:"smooth"}); $("#ta").focus(); } };
+$("#bExp").onclick=()=>{ const d=MAPS[CUR]; if(!d) return; const o={...d}; delete o._warn; delete o._at; const txt=JSON.stringify(o,null,1), fn=(d.goal_short||"vantmap")+".json";
+  if(DL){ DL.save({filename:fn,data:txt}).catch(()=>{}); return; }
+  if(window.claude){ copyText(txt,$("#bExp"),"已复制 JSON"); return; }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"})); a.download=fn; a.click(); };
+let DL=null; try{ if(window.claude&&window.claude.use) window.claude.use("downloads").then(x=>DL=x).catch(()=>{}); }catch(_){ }
+$("#bDel").onclick=()=>{ if(CUR<0) return; if(!confirm("删除这张地图？只删本机保存的副本。")) return; MAPS.splice(CUR,1); CUR=MAPS.length?0:-1; save(); render(); };
+$("#bCopy").onclick=()=>copyText($("#PROMPT").textContent.trim(),$("#bCopy"),"已复制，去 ChatGPT 粘贴");
+load(); CUR=MAPS.length?0:-1; render();
+</script>
+</body>
+</html>

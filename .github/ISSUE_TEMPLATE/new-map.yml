@@ -1,0 +1,14 @@
+name: New map
+description: Request a progress map for a new research or product direction
+labels: [new-map]
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: "Goal in one sentence", placeholder: "e.g. Solid-state batteries in mass-produced cars" }
+    validations: { required: true }
+  - type: input
+    id: finish
+    attributes: { label: "What counts as 'done' (optional)" }
+  - type: textarea
+    id: teams
+    attributes: { label: "Teams you already know (optional)" }

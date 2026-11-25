@@ -1,0 +1,7 @@
+{
+  "name": "vantmap",
+  "description": "Build, verify and update Vantmap progress maps: daily incremental update, new map, mechanical checks",
+  "version": "0.1.0",
+  "author": { "name": "Vantmap contributors" },
+  "license": "MIT"
+}

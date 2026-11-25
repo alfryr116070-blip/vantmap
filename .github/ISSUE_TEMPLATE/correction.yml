@@ -1,0 +1,26 @@
+name: Correction
+description: A claim on a map is wrong, outdated or unsupported
+labels: [correction]
+body:
+  - type: input
+    id: map
+    attributes: { label: Map, placeholder: "map id, e.g. demo" }
+    validations: { required: true }
+  - type: input
+    id: entry
+    attributes: { label: Team / entry, placeholder: "name or id shown in the drawer" }
+    validations: { required: true }
+  - type: textarea
+    id: claim
+    attributes: { label: "What the map says and what is wrong" }
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes: { label: "Link that shows the correct fact", placeholder: "https://…" }
+    validations: { required: true }
+  - type: checkboxes
+    id: affiliation
+    attributes:
+      label: Affiliation
+      options:
+        - label: I work for (or represent) the team concerned

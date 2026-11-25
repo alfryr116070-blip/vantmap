@@ -1,0 +1,35 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { python: ["3.10", "3.13"] }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "${{ matrix.python }}" }
+      - uses: actions/setup-node@v5
+        with: { node-version: "20" }
+      - run: pip install pytest
+      - name: unit tests
+        run: pytest -q
+      - name: check every map
+        run: |
+          python3 - <<'PY'
+          import json, subprocess, sys, datetime
+          maps = json.load(open("data/maps.json"))["maps"]
+          bad = 0
+          for m in maps:
+              upd = m.get("updated") or datetime.date.today().isoformat()
+              r = subprocess.run([sys.executable, "tools/check.py", m["map"], upd])
+              bad |= r.returncode
+          sys.exit(bad)
+          PY
+      - name: translations complete
+        run: python3 tools/i18n_langs.py /tmp data/i18n data/maps/*/en.json
+      - name: viewer script parses
+        run: |
+          python3 -c "import re;s=open('index.html').read();open('/tmp/v.js','w').write(';\n'.join(x for x in re.findall(r'<script(?![^>]*type=\"text/plain\")[^>]*>([\s\S]*?)</script>',s) if len(x)>1000))"
+          node --check /tmp/v.js

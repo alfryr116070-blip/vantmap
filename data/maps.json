@@ -1,0 +1,16 @@
+{
+ "maps": [
+  {
+   "id": "demo",
+   "map": "data/maps/demo/map.json",
+   "en": "data/maps/demo/en.json",
+   "title": "示例：阳台自动养护设备（虚构）",
+   "title_en": "Demo: automatic balcony plant care (fictional)",
+   "goal": "做出能自动给阳台植物浇水并按需补肥的小型设备，并卖给普通家庭",
+   "target_stage": "S2",
+   "created": "2026-11-25",
+   "updated": "2026-11-25"
+  }
+ ],
+ "repo": "https://github.com/alfryr116070-blip/vantmap"
+}
